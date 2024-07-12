@@ -220,16 +220,29 @@ def welfare_complete(task_id, task_title):
             send_content += ">任务失败: 分享资讯出错\n"
     elif task_id == 1007:
         # print("本日在“和平营地”对资讯进行一次充能")
-        if HttpApi.recharge("1103860286", "1") is not None:
-            send_content += ">任务成功: 充能资讯完成\n"
-        else:
-            send_content += ">任务失败: 充能资讯出错\n"
+        resp_json = HttpApi.recharge_rank()
+        if resp_json is not None:
+            recharge_count = 0
+            for i in range(3):
+                if HttpApi.recharge(resp_json["data"]["list"][i]["iInfoId"], "1") is not None:
+                    recharge_count += 1
+                    break
+            if recharge_count == 1:
+                send_content += ">任务成功: 充能资讯完成\n"
+            else:
+                send_content += ">任务失败: 充能资讯出错\n"
     elif task_id == 1008:
         # print("本日浏览1次攻略专区")
-        send_content += ">任务失败: 无法浏览攻略\n"
+        if HttpApi.station() is not None:
+            send_content += ">任务成功: 浏览攻略完成\n"
+        else:
+            send_content += ">任务失败: 浏览攻略出错\n"
     elif task_id == 1009:
         # print("本日在营地观看1次战绩复盘")
-        send_content += ">任务失败: 无法观看复盘\n"
+        if HttpApi.replay_data() is not None:
+            send_content += ">任务成功: 观看复盘完成\n"
+        else:
+            send_content += ">任务失败: 观看复盘出错\n"
     elif task_id == 1010:
         # print("本日浏览3分钟资讯")
         ext_data = [{
