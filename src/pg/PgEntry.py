@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from src.pg.http import HttpApi
-from src.util import Util, PushPlus
+from src.util import Util, ServerChan
 
 send_content = ""
 
@@ -306,6 +306,7 @@ def do_welfare_reward():
             task_index = task["index"]
             task_status = task["status"]
             if task_status == 1:
+                # TODO: 领取任务奖励失败，请重试
                 HttpApi.welfare_complete(task_index)
 
 
@@ -340,10 +341,12 @@ def entry():
             signin()
             do_welfare_list()
             do_welfare_reward()
-            # refresh_welfare_list()
+            refresh_welfare_list()
+            do_welfare_list()
+            do_welfare_reward()
             do_clear_like()
         else:
             send_content += ">环境变量未配置\n"
         send_content += "#####################################\n"
         print(send_content)
-        PushPlus.send("Action-和平营地", send_content)
+        ServerChan.send("Action-和平营地", send_content)
